@@ -1,1 +1,12 @@
 .DS_store
+
+# Python build artifacts
+*.pyc
+__pycache__/
+*.egg-info/
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
