@@ -51,35 +51,7 @@ class DataWriter:
 
         # 保存为pickle (支持压缩)
         df.to_pickle(file_path, compression=self.compression)
-    
-    def read_csv(self, csv_path: str) -> pd.DataFrame:
-        """
-        从CSV读取数据
-        
-        Args:
-            csv_path: CSV文件路径
-            
-        Returns:
-            DataFrame对象
-            
-        Raises:
-            FileNotFoundError: 如果CSV文件不存在
-            InvalidDataError: 如果CSV为空或无效
-        """
-        csv_file = Path(csv_path)
-        if not csv_file.exists():
-            raise FileNotFoundError(f"CSV file not found: {csv_path}")
-        
-        try:
-            df = pd.read_csv(csv_path)
-        except pd.errors.EmptyDataError:
-            raise InvalidDataError(f"CSV file is empty: {csv_path}")
-        
-        if df.empty:
-            raise InvalidDataError(f"CSV file is empty: {csv_path}")
-        
-        return df
-    
+
     def save_tick(self, df: pd.DataFrame, symbol: str, date: str) -> None:
         """
         保存tick数据

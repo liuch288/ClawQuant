@@ -132,64 +132,54 @@ class FuturesDB:
 
     
     # 写入API
-    def save_tick_from_csv(self, csv_path: str, symbol: str, date: str) -> None:
+    def save_tick(self, df: pd.DataFrame, symbol: str, date: str) -> None:
         """
-        从CSV导入tick数据
-        
+        保存tick数据
+
         Args:
-            csv_path: CSV文件路径
+            df: tick数据DataFrame
             symbol: 品种代码
             date: 日期 (YYYY-MM-DD)
-            
+
         Raises:
             InvalidSymbolError: 如果symbol无效
             InvalidDateFormatError: 如果日期格式无效
-            FileNotFoundError: 如果CSV文件不存在
-            InvalidDataError: 如果CSV为空或无效
         """
         validate_symbol(symbol)
         validate_date_format(date)
-        df = self.writer.read_csv(csv_path)
         self.writer.save_tick(df, symbol, date)
-    
-    def save_kline_from_csv(self, csv_path: str, symbol: str, 
-                           freq: str, date: str) -> None:
+
+    def save_kline(self, df: pd.DataFrame, symbol: str,
+                   freq: str, date: str) -> None:
         """
-        从CSV导入K线数据
-        
+        保存K线数据
+
         Args:
-            csv_path: CSV文件路径
+            df: K线数据DataFrame
             symbol: 品种代码
             freq: 频率
             date: 日期 (YYYY-MM-DD)
-            
+
         Raises:
             InvalidSymbolError: 如果symbol无效
             InvalidFrequencyError: 如果频率不支持
             InvalidDateFormatError: 如果日期格式无效
-            FileNotFoundError: 如果CSV文件不存在
-            InvalidDataError: 如果CSV为空或无效
         """
         validate_symbol(symbol)
         validate_frequency(freq)
         validate_date_format(date)
-        df = self.writer.read_csv(csv_path)
         self.writer.save_kline(df, symbol, freq, date)
-    
-    def save_metadata_from_csv(self, csv_path: str, 
-                              metadata_type: str) -> None:
+
+    def save_metadata(self, df: pd.DataFrame, metadata_type: str) -> None:
         """
-        从CSV导入元数据
-        
+        保存元数据
+
         Args:
-            csv_path: CSV文件路径
+            df: 元数据DataFrame
             metadata_type: 元数据类型
-            
+
         Raises:
             InvalidSymbolError: 如果metadata_type为空
-            FileNotFoundError: 如果CSV文件不存在
-            InvalidDataError: 如果CSV为空或无效
         """
         validate_symbol(metadata_type)  # 复用symbol验证逻辑检查非空
-        df = self.writer.read_csv(csv_path)
         self.writer.save_metadata(df, metadata_type)
