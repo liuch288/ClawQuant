@@ -12,19 +12,22 @@ from futures_db.utils import (
     build_metadata_path,
 )
 from futures_db.exceptions import InvalidDataError
+from futures_db.config import CompressionType, DEFAULT_COMPRESSION
 
 
 class DataWriter:
     """数据写入器类"""
-    
-    def __init__(self, base_path: Path):
+
+    def __init__(self, base_path: Path, compression: CompressionType = DEFAULT_COMPRESSION):
         """
         初始化数据写入器
-        
+
         Args:
             base_path: 数据存储根目录
+            compression: 压缩类型. 支持 None, 'gzip', 'bz2', 'zip', 'xz', 'zstd'. 默认为 'gzip'.
         """
         self.base_path = base_path
+        self.compression = compression
     
     def _ensure_directory(self, directory: Path) -> None:
         """
@@ -38,17 +41,16 @@ class DataWriter:
     def _save_pickle(self, df: pd.DataFrame, file_path: Path) -> None:
         """
         保存DataFrame为pickle文件的通用方法
-        
+
         Args:
             df: 要保存的DataFrame
             file_path: 文件路径
         """
         # 确保父目录存在
         self._ensure_directory(file_path.parent)
-        
-        # 保存为pickle
-        with open(file_path, 'wb') as f:
-            pickle.dump(df, f)
+
+        # 保存为pickle (支持压缩)
+        df.to_pickle(file_path, compression=self.compression)
     
     def read_csv(self, csv_path: str) -> pd.DataFrame:
         """

@@ -1,6 +1,6 @@
 """配置管理模块"""
 
-from typing import List
+from typing import List, Literal
 
 # 支持的数据频率
 SUPPORTED_FREQUENCIES = [
@@ -20,6 +20,12 @@ DATE_FORMAT = "%Y-%m-%d"
 METADATA_TYPES = {
     "dominant_contracts": "主力合约"
 }
+
+# 压缩方法类型
+CompressionType = Literal[None, 'gzip', 'bz2', 'zip', 'xz', 'zstd']
+
+# 默认压缩方法
+DEFAULT_COMPRESSION: CompressionType = 'gzip'
 
 
 def get_supported_frequencies() -> List[str]:

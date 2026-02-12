@@ -10,39 +10,42 @@ from futures_db.utils import (
     build_file_path,
     build_metadata_path,
 )
+from futures_db.config import CompressionType, DEFAULT_COMPRESSION
 
 
 class DataReader:
     """数据读取器类"""
-    
-    def __init__(self, base_path: Path):
+
+    def __init__(self, base_path: Path, compression: CompressionType = DEFAULT_COMPRESSION):
         """
         初始化数据读取器
-        
+
         Args:
             base_path: 数据存储根目录
+            compression: 压缩类型. 支持 None, 'gzip', 'bz2', 'zip', 'xz', 'zstd'. 默认为 'gzip'.
         """
         self.base_path = base_path
+        self.compression = compression
     
     def _load_pickle(self, file_path: Path) -> pd.DataFrame:
         """
         加载pickle文件的通用方法
-        
+
         Args:
             file_path: 文件路径
-            
+
         Returns:
             DataFrame对象
-            
+
         Raises:
             FileNotFoundError: 如果文件不存在
         """
         if not file_path.exists():
             raise FileNotFoundError(f"Data file not found: {file_path}")
-        
-        with open(file_path, 'rb') as f:
-            df = pickle.load(f)
-        
+
+        # 读取pickle (支持压缩)
+        df = pd.read_pickle(file_path, compression=self.compression)
+
         return df
     
     def read_tick(self, symbol: str, date: str) -> pd.DataFrame:
