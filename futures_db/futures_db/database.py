@@ -13,20 +13,22 @@ from futures_db.utils import (
     validate_date_range,
     validate_frequency,
 )
-from futures_db.config import CompressionType, DEFAULT_COMPRESSION
+from futures_db.config import CompressionType, DEFAULT_COMPRESSION, DEFAULT_DATA_PATH
 
 
 class FuturesDB:
     """期货数据库主类"""
 
-    def __init__(self, base_path: str = "./data", compression: CompressionType = DEFAULT_COMPRESSION):
+    def __init__(self, base_path: str = None, compression: CompressionType = DEFAULT_COMPRESSION):
         """
         初始化数据库实例
 
         Args:
-            base_path: 数据存储根目录
+            base_path: 数据存储根目录（默认从 FUTURESDB_PATH 环境变量读取，未设置则用 "./data"）
             compression: 压缩类型. 支持 None, 'gzip', 'bz2', 'zip', 'xz', 'zstd'. 默认为 'gzip'.
         """
+        if base_path is None:
+            base_path = DEFAULT_DATA_PATH
         self.base_path = Path(base_path)
         self.reader = DataReader(self.base_path, compression=compression)
         self.writer = DataWriter(self.base_path, compression=compression)
