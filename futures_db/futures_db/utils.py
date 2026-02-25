@@ -1,8 +1,8 @@
 """工具函数模块"""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 import pandas as pd
 
 from futures_db.config import DATE_FORMAT, SUPPORTED_FREQUENCIES
@@ -12,6 +12,36 @@ from futures_db.exceptions import (
     InvalidDataError,
     InvalidFrequencyError,
 )
+
+
+def normalize_date(date_input: Union[str, date]) -> str:
+    """
+    将日期输入标准化为YYYY-MM-DD格式的字符串
+    
+    Args:
+        date_input: 日期输入，可以是字符串(YYYY-MM-DD)或datetime.date对象
+        
+    Returns:
+        标准化后的日期字符串 (YYYY-MM-DD)
+        
+    Raises:
+        InvalidDateFormatError: 如果日期格式无效
+    """
+    if isinstance(date_input, date):
+        return date_input.strftime(DATE_FORMAT)
+    elif isinstance(date_input, str):
+        # 验证字符串格式
+        try:
+            datetime.strptime(date_input, DATE_FORMAT)
+            return date_input
+        except ValueError:
+            raise InvalidDateFormatError(
+                f"Invalid date format: '{date_input}'. Expected format: YYYY-MM-DD"
+            )
+    else:
+        raise InvalidDateFormatError(
+            f"Invalid date type: {type(date_input)}. Expected str or datetime.date"
+        )
 
 
 def validate_date_format(date_str: str) -> None:

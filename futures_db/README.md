@@ -8,6 +8,7 @@
 - 💾 使用pickle格式高效存储pandas DataFrame
 - 📁 自动管理目录结构
 - 🔍 灵活的数据查询：单日查询、日期范围查询
+- 📅 支持多种日期格式：字符串（YYYY-MM-DD）和datetime.date对象
 - 📈 元数据管理：主力合约列表等
 - ✅ 完整的数据验证和错误处理
 - 🧪 100%测试覆盖，包括属性测试
@@ -24,6 +25,7 @@ pip install -r requirements.txt
 
 ```python
 from futures_db import FuturesDB
+from datetime import date
 import pandas as pd
 
 # 初始化数据库
@@ -37,8 +39,12 @@ tick_df = pd.DataFrame({
 })
 db.writer.save_tick(tick_df, symbol="IF", date="2024-01-01")
 
-# 读取tick数据
+# 读取tick数据 - 支持字符串格式
 data = db.get_tick(symbol="IF", date="2024-01-01")
+print(data)
+
+# 读取tick数据 - 支持datetime.date对象
+data = db.get_tick(symbol="IF", date=date(2024, 1, 1))
 print(data)
 ```
 
@@ -64,21 +70,44 @@ db.save_kline_from_csv(
 ### K线数据查询
 
 ```python
-# 查询单日K线数据
+from datetime import date
+
+# 查询单日K线数据 - 字符串格式
 kline = db.get_kline(symbol="IF", freq="1min", date="2024-01-01")
 
-# 查询日期范围K线数据
+# 查询单日K线数据 - datetime.date对象
+kline = db.get_kline(symbol="IF", freq="1min", date=date(2024, 1, 1))
+
+# 查询日期范围K线数据 - 字符串格式
 kline_range = db.get_kline(
     symbol="IF",
     freq="1min",
     start_date="2024-01-01",
     end_date="2024-01-10"
 )
+
+# 查询日期范围K线数据 - datetime.date对象
+kline_range = db.get_kline(
+    symbol="IF",
+    freq="1min",
+    start_date=date(2024, 1, 1),
+    end_date=date(2024, 1, 10)
+)
+
+# 混合使用字符串和date对象
+kline_range = db.get_kline(
+    symbol="IF",
+    freq="1min",
+    start_date="2024-01-01",
+    end_date=date(2024, 1, 10)
+)
 ```
 
 ### 元数据管理
 
 ```python
+from datetime import date
+
 # 保存主力合约数据
 contracts_df = pd.DataFrame({
     "date": ["2024-01-01", "2024-01-02"],
@@ -89,7 +118,12 @@ db.metadata_manager.save_dominant_contracts(contracts_df)
 
 # 读取主力合约（可选日期过滤）
 all_contracts = db.get_dominant_contracts()
+
+# 使用字符串格式过滤
 contracts_on_date = db.get_dominant_contracts(date="2024-01-01")
+
+# 使用datetime.date对象过滤
+contracts_on_date = db.get_dominant_contracts(date=date(2024, 1, 1))
 ```
 
 ## 数据存储结构
@@ -121,6 +155,30 @@ data/
 - `1hour` - 1小时K线
 - `daily` - 日K线
 
+## 日期格式支持
+
+所有接受日期参数的方法都支持以下两种格式：
+
+1. **字符串格式**：`"YYYY-MM-DD"`
+   ```python
+   db.get_tick("IF", "2024-01-01")
+   db.get_kline("IF", "1min", start_date="2024-01-01", end_date="2024-01-10")
+   ```
+
+2. **datetime.date对象**：
+   ```python
+   from datetime import date
+   
+   db.get_tick("IF", date(2024, 1, 1))
+   db.get_kline("IF", "1min", start_date=date(2024, 1, 1), end_date=date(2024, 1, 10))
+   ```
+
+3. **混合使用**：
+   ```python
+   # 可以在同一个调用中混合使用两种格式
+   db.get_kline("IF", "1min", start_date="2024-01-01", end_date=date(2024, 1, 10))
+   ```
+
 ## API文档
 
 ### FuturesDB类
@@ -132,9 +190,13 @@ db = FuturesDB(base_path="./data")
 
 #### 读取方法
 - `get_tick(symbol, date)` - 读取tick数据
+  - `date`: 支持字符串 "YYYY-MM-DD" 或 datetime.date 对象
 - `get_kline(symbol, freq, date=None, start_date=None, end_date=None)` - 读取K线数据
+  - `date`: 支持字符串 "YYYY-MM-DD" 或 datetime.date 对象
+  - `start_date`, `end_date`: 支持字符串 "YYYY-MM-DD" 或 datetime.date 对象
 - `get_metadata(metadata_type)` - 读取元数据
 - `get_dominant_contracts(date=None)` - 读取主力合约
+  - `date`: 支持字符串 "YYYY-MM-DD" 或 datetime.date 对象
 
 #### 写入方法
 - `save_tick_from_csv(csv_path, symbol, date)` - 从CSV导入tick数据
