@@ -1,5 +1,6 @@
 """配置管理模块"""
 
+import os
 from typing import List, Literal
 
 # 支持的数据频率
@@ -26,6 +27,9 @@ CompressionType = Literal[None, 'gzip', 'bz2', 'zip', 'xz', 'zstd']
 
 # 默认压缩方法
 DEFAULT_COMPRESSION: CompressionType = 'gzip'
+
+# 默认数据目录（可从环境变量 FUTURESDB_PATH 覆盖）
+DEFAULT_DATA_PATH = os.environ.get("FUTURESDB_PATH", "./data")
 
 
 def get_supported_frequencies() -> List[str]:

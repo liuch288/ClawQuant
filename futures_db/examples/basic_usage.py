@@ -1,6 +1,7 @@
 """基本使用示例"""
 
 import pandas as pd
+from datetime import date
 from futures_db import FuturesDB
 
 # 初始化数据库
@@ -24,6 +25,12 @@ print("Tick数据已保存")
 print("\n=== 示例2: 读取tick数据 ===")
 tick_df = db.get_tick(symbol='IF', date='2024-01-01')
 print(tick_df)
+
+# 示例2.1: 使用datetime.date对象读取tick数据
+print("\n=== 示例2.1: 使用datetime.date对象读取tick数据 ===")
+tick_df2 = db.get_tick(symbol='IF', date=date(2024, 1, 1))
+print("使用date对象读取成功！")
+print(tick_df2)
 
 # 示例3: 保存K线数据
 print("\n=== 示例3: 保存K线数据 ===")
@@ -58,11 +65,25 @@ kline_data2 = pd.DataFrame({
 kline_data2.to_csv('kline_sample2.csv', index=False)
 db.save_kline_from_csv('kline_sample2.csv', symbol='IF', freq='1min', date='2024-01-02')
 
-# 读取日期范围
+# 读取日期范围（使用字符串）
 kline_range = db.get_kline(symbol='IF', freq='1min', 
                            start_date='2024-01-01', end_date='2024-01-02')
 print(f"读取到 {len(kline_range)} 条记录")
 print(kline_range)
+
+# 示例5.1: 使用datetime.date对象读取日期范围
+print("\n=== 示例5.1: 使用datetime.date对象读取日期范围 ===")
+kline_range2 = db.get_kline(symbol='IF', freq='1min', 
+                            start_date=date(2024, 1, 1), 
+                            end_date=date(2024, 1, 2))
+print(f"使用date对象读取到 {len(kline_range2)} 条记录")
+
+# 示例5.2: 混合使用字符串和date对象
+print("\n=== 示例5.2: 混合使用字符串和date对象 ===")
+kline_range3 = db.get_kline(symbol='IF', freq='1min', 
+                            start_date='2024-01-01', 
+                            end_date=date(2024, 1, 2))
+print(f"混合格式读取到 {len(kline_range3)} 条记录")
 
 # 示例6: 保存和读取元数据
 print("\n=== 示例6: 保存和读取元数据 ===")
@@ -83,5 +104,10 @@ print(all_contracts)
 contracts_on_date = db.get_dominant_contracts(date='2024-01-01')
 print("\n2024-01-01的主力合约:")
 print(contracts_on_date)
+
+# 使用datetime.date对象
+contracts_on_date2 = db.get_dominant_contracts(date=date(2024, 1, 1))
+print("\n使用date对象查询2024-01-01的主力合约:")
+print(contracts_on_date2)
 
 print("\n=== 示例完成 ===")
