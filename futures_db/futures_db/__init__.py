@@ -16,7 +16,7 @@ from futures_db.exceptions import (
 )
 from futures_db.config import get_supported_frequencies
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "FuturesDB",
     "FuturesDBError",

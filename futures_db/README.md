@@ -240,6 +240,15 @@ pytest tests/test_*.py -v --ignore=tests/test_*_properties.py
 - `basic_usage.py` - 基本使用示例
 - `advanced_usage.py` - 高级使用示例
 
+## 变更日志
+
+### v0.1.2
+- 修复 `validate_date_range()` 和 `generate_date_range()` 不兼容 `datetime.date` 入参的问题，现在统一支持 `str` 和 `datetime.date`
+- 修复 `MetadataManager.get_dominant_contracts()` 不兼容 `datetime.date` 入参的问题
+
+### v0.1.1
+- 初始版本
+
 ## 许可证
 
 MIT License

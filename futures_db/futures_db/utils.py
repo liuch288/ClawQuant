@@ -76,22 +76,25 @@ def validate_symbol(symbol: str) -> None:
         raise InvalidSymbolError("Symbol cannot be empty")
 
 
-def validate_date_range(start_date: str, end_date: str) -> None:
+def validate_date_range(start_date: Union[str, date], end_date: Union[str, date]) -> None:
     """
     验证日期范围是否有效
     
     Args:
-        start_date: 开始日期
-        end_date: 结束日期
+        start_date: 开始日期 (YYYY-MM-DD字符串或datetime.date对象)
+        end_date: 结束日期 (YYYY-MM-DD字符串或datetime.date对象)
         
     Raises:
+        InvalidDateFormatError: 如果日期格式无效
         ValueError: 如果start_date晚于end_date
     """
-    start = datetime.strptime(start_date, DATE_FORMAT)
-    end = datetime.strptime(end_date, DATE_FORMAT)
+    start_str = normalize_date(start_date)
+    end_str = normalize_date(end_date)
+    start = datetime.strptime(start_str, DATE_FORMAT)
+    end = datetime.strptime(end_str, DATE_FORMAT)
     if start > end:
         raise ValueError(
-            f"Invalid date range: start_date ({start_date}) is later than end_date ({end_date})"
+            f"Invalid date range: start_date ({start_str}) is later than end_date ({end_str})"
         )
 
 
@@ -126,19 +129,21 @@ def validate_frequency(freq: str) -> None:
         )
 
 
-def generate_date_range(start_date: str, end_date: str) -> List[str]:
+def generate_date_range(start_date: Union[str, date], end_date: Union[str, date]) -> List[str]:
     """
     生成日期范围列表
     
     Args:
-        start_date: 开始日期 (YYYY-MM-DD)
-        end_date: 结束日期 (YYYY-MM-DD)
+        start_date: 开始日期 (YYYY-MM-DD字符串或datetime.date对象)
+        end_date: 结束日期 (YYYY-MM-DD字符串或datetime.date对象)
         
     Returns:
         日期字符串列表，格式为YYYY-MM-DD
     """
-    start = datetime.strptime(start_date, DATE_FORMAT)
-    end = datetime.strptime(end_date, DATE_FORMAT)
+    start_str = normalize_date(start_date)
+    end_str = normalize_date(end_date)
+    start = datetime.strptime(start_str, DATE_FORMAT)
+    end = datetime.strptime(end_str, DATE_FORMAT)
     
     dates = []
     current = start
