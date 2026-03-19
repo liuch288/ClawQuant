@@ -1,11 +1,13 @@
 """元数据管理器模块"""
 
+from datetime import date
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 import pandas as pd
 
 from futures_db.readers import DataReader
 from futures_db.writers import DataWriter
+from futures_db.utils import normalize_date
 
 
 class MetadataManager:
@@ -22,12 +24,12 @@ class MetadataManager:
         self.reader = DataReader(base_path)
         self.writer = DataWriter(base_path)
     
-    def get_dominant_contracts(self, date: Optional[str] = None) -> pd.DataFrame:
+    def get_dominant_contracts(self, date: Optional[Union[str, date]] = None) -> pd.DataFrame:
         """
         获取主力合约数据
         
         Args:
-            date: 可选的日期过滤 (YYYY-MM-DD)
+            date: 可选的日期过滤 (YYYY-MM-DD字符串或datetime.date对象)
             
         Returns:
             主力合约DataFrame
@@ -36,7 +38,8 @@ class MetadataManager:
         
         # 如果指定了日期且DataFrame有date列，进行过滤
         if date is not None and 'date' in df.columns:
-            df = df[df['date'] == date]
+            date_str = normalize_date(date)
+            df = df[df['date'] == date_str]
         
         return df
     
