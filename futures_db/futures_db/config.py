@@ -29,7 +29,7 @@ CompressionType = Literal[None, 'gzip', 'bz2', 'zip', 'xz', 'zstd']
 DEFAULT_COMPRESSION: CompressionType = 'gzip'
 
 # 默认数据目录（可从环境变量 FUTURESDB_PATH 覆盖）
-DEFAULT_DATA_PATH = os.environ.get("FUTURESDB_PATH", "./data")
+DEFAULT_DATA_PATH = os.environ.get("FUTURESDB_PATH", os.path.join(os.path.expanduser("~"), "data", "futures_db"))
 
 
 def get_supported_frequencies() -> List[str]:
