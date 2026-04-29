@@ -7,17 +7,17 @@ from typing import List
 
 COLUMN_RENAME = {
     'TradingDay': 'trading_day',
-    'InstrumentID': 'instrument_id',
+    'InstrumentID': 'sym',
     'UpdateTime': 'update_time',
-    'UpdateMillisec': 'update_millisec',
-    'LastPrice': 'last_price',
-    'Volume': 'volume',
-    'BidPrice1': 'bid_price_1',
-    'BidVolume1': 'bid_volume_1',
-    'AskPrice1': 'ask_price_1',
-    'AskVolume1': 'ask_volume_1',
-    'Turnover': 'notional',
-    'OpenInterest': 'open_interest',
+    'UpdateMillisec': 'update_ms',
+    'LastPrice': 'last_px',
+    'Volume': 'tot_sz',
+    'Turnover': 'tot_notional',
+    'OpenInterest': 'oi',
+    'BidPrice1': 'bid_px1',
+    'BidVolume1': 'bid_sz1',
+    'AskPrice1': 'ask_px1',
+    'AskVolume1': 'ask_sz1',
     'UpperLimitPrice': 'upper_limit',
     'LowerLimitPrice': 'lower_limit',
 }
@@ -39,11 +39,11 @@ def _create_datetime_index(df: pd.DataFrame) -> pd.DataFrame:
     datetime_str = (
         df['trading_day'].astype(str) + ' ' +
         df['update_time'] + '.' +
-        df['update_millisec'].astype(str).str.zfill(3)
+        df['update_ms'].astype(str).str.zfill(3)
     )
     datetime_index = pd.to_datetime(datetime_str, format='%Y%m%d %H:%M:%S.%f')
     df = df.set_index(datetime_index)
-    df.index.name = 'timestamp'
+    df.index.name = 'datetime'
     return df
 
 
@@ -84,7 +84,7 @@ def load_day_folder(day_folder: str) -> pd.DataFrame:
 
     for csv_file in day_path.glob("*_*.csv"):
         # Skip continuous contract files (contains Chinese characters)
-        if '主力' in csv_file.name:
+        if '主力' in csv_file.name or '连续' in csv_file.name:
             continue
         df = load_tick_data(str(csv_file))
         dfs.append(df)
